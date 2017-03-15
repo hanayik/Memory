@@ -67,12 +67,12 @@ var nonWordsFilledFileToSave
 var nonWordsUnfilledFileToSave
 var tripletsA1FileToSave
 var tripletsA2FileToSave
-var wordsFilledHeader = ['subj', 'session', 'assessment', 'trial', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
-var wordsUnfilledHeader = ['subj', 'session', 'assessment', 'trial', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
-var nonWordsFilledHeader = ['subj', 'session', 'assessment', 'trial', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
-var nonWordsUnfilledHeader = ['subj', 'session', 'assessment', 'trial', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
-var tripletsA1Header = ['subj', 'session', 'assessment', 'trial', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
-var tripletsA2Header = ['subj', 'session', 'assessment', 'trial', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+var wordsFilledHeader = ['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+var wordsUnfilledHeader = ['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+var nonWordsFilledHeader = ['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+var nonWordsUnfilledHeader = ['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+var tripletsA1Header = ['subj', 'session', 'assessment', 'stim1', 'stim2', 'stim3', 'conditionType', 'wordStructure', 'correctResp', 'subjResp', 'accuracy', os.EOL]
+var tripletsA2Header = ['subj', 'session', 'assessment', 'stim1', 'stim2', 'stim3', 'conditionType', 'wordStructure', 'correctResp', 'subjResp', 'accuracy', os.EOL]
 var assessment = ''
 var subjID
 var sessID
@@ -81,7 +81,7 @@ var accuracy
 var rt
 //var trialNum = document.getElementById("trialNumID")
 //var trialNumber = 1
-var t = 0
+var t = -1
 var tReal = t-1
 lowLag.init(); // init audio functions
 var wordsFilledInstructions = "words filled"
@@ -92,12 +92,31 @@ var tripletsA1Instructions = 'triplets A1'
 var tripletsA2Instructions = 'triplets A2'
 var clickCount = 0
 var tripletResp = ['n','n','n']
+var randomArray = [1,2,3,4,5,6,7,8,9]
 
 
 
 
 
 
+function shuffle(array) {
+  //https://bost.ocks.org/mike/shuffle/
+  var m = array.length, t, i;
+
+  // While there remain elements to shuffle…
+  while (m) {
+
+    // Pick a remaining element…
+    i = Math.floor(Math.random() * m--);
+
+    // And swap it with the current element.
+    t = array[m];
+    array[m] = array[i];
+    array[i] = t;
+  }
+
+  return array;
+}
 
 
 //camera preview on
@@ -668,7 +687,8 @@ function checkTripletsA1Accuracy() {
  } else {
    acc = 0
  }
- return acc
+ return {acc: acc,
+   respStr: respStr}
 }
 
 function checkTripletsA2Accuracy() {
@@ -679,7 +699,8 @@ function checkTripletsA2Accuracy() {
  } else {
    acc = 0
  }
- return acc
+ return {acc: acc,
+   respStr: respStr}
 }
 
 
@@ -773,21 +794,22 @@ function updateKeys() {
       console.log("accuracy: ", accuracy)
       keys.rt = getRT()
       console.log("RT: ", keys.rt)
-      //appendWordsFilledTrialDataToFile(wordsFilledFileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+      //['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+      appendWordsFilledTrialDataToFile(wordsFilledFileToSave, [subjID, sessID, assessment, wordsFilledTrials[t].stim1.trim(), wordsFilledTrials[t].stim2.trim(), wordsFilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
       showNextWordsFilledTrial()
     } else if (assessment === 'wordsUnfilled') {
       accuracy = checkWordsUnfilledAccuracy()
       console.log("accuracy: ", accuracy)
       keys.rt = getRT()
       console.log("RT: ", keys.rt)
-      //appendWordsUnfilledTrialDataToFile(wordsUnfilledFileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+      appendWordsUnfilledTrialDataToFile(wordsUnfilledFileToSave, [subjID, sessID, assessment, wordsUnfilledTrials[t].stim1.trim(), wordsUnfilledTrials[t].stim2.trim(), wordsUnfilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
       showNextWordsUnfilledTrial()
     } else if (assessment === 'nonWordsFilled') {
       accuracy = checkNonWordsFilledAccuracy()
       console.log("accuracy: ", accuracy)
       keys.rt = getRT()
       console.log("RT: ", keys.rt)
-      //appendNonWordsFilledTrialDataToFile(nonWordsFilledFileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+      appendNonWordsFilledTrialDataToFile(nonWordsFilledFileToSave, [subjID, sessID, assessment, nonWordsFilledTrials[t].stim1.trim(), nonWordsFilledTrials[t].stim2.trim(), nonWordsFilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
       showNextNonWordsFilledTrial()
 
     } else if (assessment === 'nonWordsUnfilled') {
@@ -795,24 +817,13 @@ function updateKeys() {
       console.log("accuracy: ", accuracy)
       keys.rt = getRT()
       console.log("RT: ", keys.rt)
-      //appendNonWordsUnfilledTrialDataToFile(nonWordsUnfilledFileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+      appendNonWordsUnfilledTrialDataToFile(nonWordsUnfilledFileToSave, [subjID, sessID, assessment, nonWordsUnfilledTrials[t].stim1.trim(), nonWordsUnfilledTrials[t].stim2.trim(), nonWordsUnfilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
       showNextNonWordsUnfilledTrial()
 
     } else if (assessment === 'tripletsA1') {
-      // accuracy = checkTripletsA1Accuracy()
-      // console.log("accuracy: ", accuracy)
-      // keys.rt = getRT()
-      // console.log("RT: ", keys.rt)
-      // showNextTripletsA1Trial()
-      //appendTripletsA1TrialDataToFile(tripletsA1FileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
 
     } else if (assessment === 'tripletsA2') {
-      // accuracy = checkTripletsA2Accuracy()
-      // console.log("accuracy: ", accuracy)
-      // keys.rt = getRT()
-      // console.log("RT: ", keys.rt)
-      // showNextTripletsA2Trial()
-      //appendTripletsA1TrialDataToFile(tripletsA1FileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+
     }
   } else if (keys.key === 'ArrowLeft') {
 
@@ -945,12 +956,13 @@ function getRandomInt(min, max) {
 }
 
 
-function showNumber() {
+function showNumber(randNumber) {
   clearScreen()
-  randNumber = getRandomInt(1,9)
+  //randNumber = getRandomInt(1,9)
   var textDiv = document.createElement("div")
   textDiv.style.textAlign = 'center'
   var p = document.createElement("p")
+  p.style.fontSize = "72px"
   var txtNode = document.createTextNode(randNumber.toString())
   p.appendChild(txtNode)
   textDiv.appendChild(p)
@@ -958,12 +970,21 @@ function showNumber() {
 }
 
 function showNumberSequence() {
+  var randomNumbers = shuffle(randomArray)
   var addedTime = 250
   setTimeout(clearScreen, 1000+addedTime) //clear the screen 1.25 sec after first sound clip played
-  setTimeout(showNumber,2000+addedTime) // show the number sequence for filled trial types
-  setTimeout(showNumber,3000+addedTime)
-  setTimeout(showNumber,4000+addedTime)
-  setTimeout(showNumber,5000+addedTime) // one second between each one
+  setTimeout(function () {
+    showNumber(randomNumbers[0])
+  },2000+addedTime) // show the number sequence for filled trial types
+  setTimeout(function() {
+    showNumber(randomNumbers[1])
+  },3000+addedTime)
+  setTimeout(function() {
+    showNumber(randomNumbers[2])
+  },4000+addedTime)
+  setTimeout(function() {
+    showNumber(randomNumbers[3])
+  },5000+addedTime) // one second between each one
 }
 
 
@@ -1181,18 +1202,18 @@ function addClickToCounter(imgIdx) {
   } else {
     //console.log("tripletResp: ", tripletResp)
     if (assessment === 'tripletsA1') {
-      accuracy = checkTripletsA1Accuracy()
-      console.log("accuracy: ", accuracy)
+      res = checkTripletsA1Accuracy()
+      console.log("accuracy: ", res.acc)
       // keys.rt = getRT()
       // console.log("RT: ", keys.rt)
-      //appendNonWordsFilledTrialDataToFile(nonWordsFilledFileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+      appendTripletsA1TrialDataToFile(tripletsA1FileToSave, [subjID, sessID, assessment, tripletsA1Trials[t].stim1.trim(), tripletsA1Trials[t].stim2.trim(), tripletsA1Trials[t].stim3.trim(), tripletsA1Trials[t].conditionType.trim(), tripletsA1Trials[t].wordStructure.trim(), tripletsA1Trials[t].correctResp.trim(), res.respStr, res.acc])
       showNextTripletsA1Trial()
     } else if (assessment === 'tripletsA2') {
-      accuracy = checkTripletsA2Accuracy()
-      console.log("accuracy: ", accuracy)
+      res = checkTripletsA2Accuracy()
+      console.log("accuracy: ", res.acc)
       // keys.rt = getRT()
       // console.log("RT: ", keys.rt)
-      //appendNonWordsFilledTrialDataToFile(nonWordsFilledFileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+      appendTripletsA2TrialDataToFile(tripletsA2FileToSave, [subjID, sessID, assessment, tripletsA2Trials[t].stim1.trim(), tripletsA2Trials[t].stim2.trim(), tripletsA2Trials[t].stim3.trim(), tripletsA2Trials[t].conditionType.trim(), tripletsA2Trials[t].wordStructure.trim(), tripletsA2Trials[t].correctResp.trim(), res.respStr, res.acc])
       showNextTripletsA2Trial()
     }
     clickCount = 0
@@ -1202,7 +1223,7 @@ function addClickToCounter(imgIdx) {
 
 
 function resetTrialNumber() {
-  t = 0
+  t = -1
 }
 
 
