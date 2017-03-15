@@ -27,18 +27,52 @@ var beepSound = path.join(__dirname, 'assets', 'beep.wav')
 var exp = new experiment('Memory')
 // construct a new ffmpeg recording object
 var rec = new ff()
-var palpa1TimeoutID
-var palpa1TimeoutTime = 1000*30 // 30 seconds
+var wordsFilledTimeoutID
+var nonWordsFilledTimeoutID
+var wordsUnfilledTimeoutID
+var nonWordsUnfilledTimeoutID
+var tripletsA1TimeoutID
+var tripletsA2TimeoutID
+var wordsFilledTimeoutTime = 1000*30 // 30 seconds
+var wordsUnfilledTimeoutTime = 1000*30 // 30 seconds
+var nonWordsFilledTimeoutTime = 1000*30 // 30 seconds
+var nonWordsUnfilledTimeoutTime = 1000*30 // 30 seconds
+var tripletsA1TimeoutTime = 1000*30
+var tripletsA2TimeoutTime = 1000*30
 var imgTimeoutID
 var imgDurationMS = 1000*2 // 2 seconds
 exp.getRootPath()
 exp.getMediaPath()
-var palpa1MediaPath = path.resolve(exp.mediapath, 'palpa1', 'media')
-var palpa1StimList = fs.readdirSync(palpa1MediaPath).sort(naturalSort())
-var palpa1Trials = readCSV(path.resolve(exp.mediapath, 'palpa1', 'palpa1stim.csv'))
-var maxNumberOfPalpa1Trials = palpa1Trials.length
-var palpa1FileToSave
-var palpa1DataFileHeader = ['subj', 'session', 'assessment', 'trial', 'diffLoc', 'diffType', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+var wordsFilledMediaPath = path.resolve(exp.mediapath, 'wordsFilled', 'media')
+var wordsUnfilledMediaPath = path.resolve(exp.mediapath, 'wordsUnfilled', 'media')
+var nonWordsFilledMediaPath = path.resolve(exp.mediapath, 'nonWordsFilled', 'media')
+var nonWordsUnfilledMediaPath = path.resolve(exp.mediapath, 'nonWordsUnfilled', 'media')
+var tripletsA1MediaPath = path.resolve(exp.mediapath, 'tripletsA1', 'media')
+var tripletsA2MediaPath = path.resolve(exp.mediapath, 'tripletsA2', 'media')
+var wordsFilledTrials = readCSV(path.resolve(wordsFilledMediaPath, 'wordsFilled.csv'))
+var wordsUnfilledTrials = readCSV(path.resolve(wordsUnfilledMediaPath, 'wordsUnfilled.csv'))
+var nonWordsFilledTrials = readCSV(path.resolve(nonWordsFilledMediaPath, 'nonWordsFilled.csv'))
+var nonWordsUnfilledTrials = readCSV(path.resolve(nonWordsUnfilledMediaPath, 'nonWordsUnfilled.csv'))
+var tripletsA1Trials = readCSV(path.resolve(tripletsA1MediaPath, 'tripletsA1.csv'))
+var tripletsA2Trials = readCSV(path.resolve(tripletsA2MediaPath, 'tripletsA2.csv'))
+var maxNumberOfWordsFilledTrials = wordsFilledTrials.length
+var maxNumerOfWordsUnfilledTrials = wordsUnfilledTrials.length
+var maxNumberOfNonWordsFilledTrials = nonWordsFilledTrials.length
+var maxNumberOfNonWordsUnfilledTrials = nonWordsUnfilledTrials.length
+var maxNumberOfTripletsA1Trials = tripletsA1Trials.length
+var maxNumberOfTripletsA2Trials = tripletsA2Trials.length
+var wordsFilledFileToSave
+var wordsUnfilledFileToSave
+var nonWordsFilledFileToSave
+var nonWordsUnfilledFileToSave
+var tripletsA1FileToSave
+var tripletsA2FileToSave
+var wordsFilledHeader = ['subj', 'session', 'assessment', 'trial', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+var wordsUnfilledHeader = ['subj', 'session', 'assessment', 'trial', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+var nonWordsFilledHeader = ['subj', 'session', 'assessment', 'trial', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+var nonWordsUnfilledHeader = ['subj', 'session', 'assessment', 'trial', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+var tripletsA1Header = ['subj', 'session', 'assessment', 'trial', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+var tripletsA2Header = ['subj', 'session', 'assessment', 'trial', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
 var assessment = ''
 var subjID
 var sessID
@@ -50,7 +84,14 @@ var rt
 var t = 0
 var tReal = t-1
 lowLag.init(); // init audio functions
-//console.log(cinderellaImgs)
+var wordsFilledInstructions = "words filled"
+var wordsUnfilledInstructions = 'words unfilled'
+var nonWordsFilledInstructions = "non words filled"
+var nonWordsUnfilledInstructions = 'non words unfilled'
+var tripletsA1Instructions = 'triplets A1'
+var tripletsA2Instructions = 'triplets A2'
+var clickCount = 0
+var tripletResp = ['n','n','n']
 
 
 
@@ -244,7 +285,7 @@ function makeSureUserDataFolderIsThere(){
 function chooseFile() {
   console.log("Analyze a file!")
   dialog.showOpenDialog(
-    {title: "PALPA Analysis",
+    {title: "Memory Analysis",
     defaultPath: userDataPath,
     properties: ["openFile"]},
   analyzeSelectedFile)
@@ -296,8 +337,8 @@ function clearScreen() {
 
 
 // show text instructions on screen
-function showPalpa1Instructions(txt) {
-  palpa1FileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
+function showWordsFilledInstructions(txt) {
+  wordsFilledFileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
   clearScreen()
   //rec.startRec()
   var textDiv = document.createElement("div")
@@ -311,7 +352,125 @@ function showPalpa1Instructions(txt) {
   var startBtn = document.createElement("button")
   var startBtnTxt = document.createTextNode("Start")
   startBtn.appendChild(startBtnTxt)
-  startBtn.onclick = showNextPalpa1Trial
+  startBtn.onclick = showNextWordsFilledTrial
+  btnDiv.appendChild(startBtn)
+  content.appendChild(textDiv)
+  content.appendChild(lineBreak)
+  content.appendChild(btnDiv)
+  return getTime()
+}
+
+function showNonWordsFilledInstructions(txt) {
+  nonWordsFilledFileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
+  clearScreen()
+  //rec.startRec()
+  var textDiv = document.createElement("div")
+  textDiv.style.textAlign = 'center'
+  var p = document.createElement("p")
+  var txtNode = document.createTextNode(txt)
+  p.appendChild(txtNode)
+  textDiv.appendChild(p)
+  var lineBreak = document.createElement("br")
+  var btnDiv = document.createElement("div")
+  var startBtn = document.createElement("button")
+  var startBtnTxt = document.createTextNode("Start")
+  startBtn.appendChild(startBtnTxt)
+  startBtn.onclick = showNextNonWordsFilledTrial
+  btnDiv.appendChild(startBtn)
+  content.appendChild(textDiv)
+  content.appendChild(lineBreak)
+  content.appendChild(btnDiv)
+  return getTime()
+}
+
+function showWordsUnfilledInstructions(txt) {
+  wordsUnfilledFileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
+  clearScreen()
+  //rec.startRec()
+  var textDiv = document.createElement("div")
+  textDiv.style.textAlign = 'center'
+  var p = document.createElement("p")
+  var txtNode = document.createTextNode(txt)
+  p.appendChild(txtNode)
+  textDiv.appendChild(p)
+  var lineBreak = document.createElement("br")
+  var btnDiv = document.createElement("div")
+  var startBtn = document.createElement("button")
+  var startBtnTxt = document.createTextNode("Start")
+  startBtn.appendChild(startBtnTxt)
+  startBtn.onclick = showNextWordsUnfilledTrial
+  btnDiv.appendChild(startBtn)
+  content.appendChild(textDiv)
+  content.appendChild(lineBreak)
+  content.appendChild(btnDiv)
+  return getTime()
+}
+
+
+function showNonWordsUnfilledInstructions(txt) {
+  nonWordsUnfilledFileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
+  clearScreen()
+  //rec.startRec()
+  var textDiv = document.createElement("div")
+  textDiv.style.textAlign = 'center'
+  var p = document.createElement("p")
+  var txtNode = document.createTextNode(txt)
+  p.appendChild(txtNode)
+  textDiv.appendChild(p)
+  var lineBreak = document.createElement("br")
+  var btnDiv = document.createElement("div")
+  var startBtn = document.createElement("button")
+  var startBtnTxt = document.createTextNode("Start")
+  startBtn.appendChild(startBtnTxt)
+  startBtn.onclick = showNextNonWordsUnfilledTrial
+  btnDiv.appendChild(startBtn)
+  content.appendChild(textDiv)
+  content.appendChild(lineBreak)
+  content.appendChild(btnDiv)
+  return getTime()
+}
+
+
+function showTripletsA1Instructions(txt) {
+  tripletsA1FileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
+  clearScreen()
+  //rec.startRec()
+  var textDiv = document.createElement("div")
+  textDiv.style.textAlign = 'center'
+  var p = document.createElement("p")
+  var txtNode = document.createTextNode(txt)
+  p.appendChild(txtNode)
+  textDiv.appendChild(p)
+  var lineBreak = document.createElement("br")
+  var btnDiv = document.createElement("div")
+  var startBtn = document.createElement("button")
+  var startBtnTxt = document.createTextNode("Start")
+  startBtn.appendChild(startBtnTxt)
+  startBtn.onclick = showNextTripletsA1Trial
+  btnDiv.appendChild(startBtn)
+  content.appendChild(textDiv)
+  content.appendChild(lineBreak)
+  content.appendChild(btnDiv)
+  return getTime()
+}
+
+
+function showTripletsA2Instructions(txt) {
+  tripletsA2FileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
+  clearScreen()
+  //rec.startRec()
+  var textDiv = document.createElement("div")
+  textDiv.style.textAlign = 'center'
+  var p = document.createElement("p")
+  var txtNode = document.createTextNode(txt)
+  p.appendChild(txtNode)
+  textDiv.appendChild(p)
+  var lineBreak = document.createElement("br")
+  var btnDiv = document.createElement("div")
+  var startBtn = document.createElement("button")
+  var startBtnTxt = document.createTextNode("Start")
+  startBtn.appendChild(startBtnTxt)
+  startBtn.onclick = showNextTripletsA2Trial
   btnDiv.appendChild(startBtn)
   content.appendChild(textDiv)
   content.appendChild(lineBreak)
@@ -465,8 +624,57 @@ function getRT() {
 }
 
 
-function checkPalpa1Accuracy() {
- if (keys.key === palpa1Trials[t].same.trim()) {
+function checkWordsFilledAccuracy() {
+ if (keys.key === wordsFilledTrials[t].correctResp.trim()) {
+   acc = 1
+ } else {
+   acc = 0
+ }
+ return acc
+}
+
+function checkWordsUnfilledAccuracy() {
+ if (keys.key === wordsUnfilledTrials[t].correctResp.trim()) {
+   acc = 1
+ } else {
+   acc = 0
+ }
+ return acc
+}
+
+function checkNonWordsFilledAccuracy() {
+ if (keys.key === nonWordsFilledTrials[t].correctResp.trim()) {
+   acc = 1
+ } else {
+   acc = 0
+ }
+ return acc
+}
+
+function checkNonWordsUnfilledAccuracy() {
+ if (keys.key === nonWordsUnfilledTrials[t].correctResp.trim()) {
+   acc = 1
+ } else {
+   acc = 0
+ }
+ return acc
+}
+
+function checkTripletsA1Accuracy() {
+  tempRespStr = tripletResp.toString()
+  respStr = tempRespStr.replace(/,/g,'') // replace commas with nothing
+ if (respStr === tripletsA1Trials[t].correctResp.trim()) {
+   acc = 1
+ } else {
+   acc = 0
+ }
+ return acc
+}
+
+function checkTripletsA2Accuracy() {
+  tempRespStr = tripletResp.toString()
+  respStr = tempRespStr.replace(/,/g,'') // replace commas with nothing
+ if (respStr === tripletsA2Trials[t].correctResp.trim()) {
    acc = 1
  } else {
    acc = 0
@@ -475,12 +683,73 @@ function checkPalpa1Accuracy() {
 }
 
 
-
-function appendPalpa1TrialDataToFile(fileToAppend, dataArray) {
+function appendWordsFilledTrialDataToFile(fileToAppend, dataArray) {
   dataArray.push(os.EOL)
   dataString = csvsync.stringify(dataArray)
   if (!fs.existsSync(fileToAppend)) {
-    fs.appendFileSync(fileToAppend, palpa1DataFileHeader)
+    fs.appendFileSync(fileToAppend, wordsFilledHeader)
+    fs.appendFileSync(fileToAppend, dataArray)
+  } else {
+    fs.appendFileSync(fileToAppend, dataArray)
+  }
+  console.log("appended file: ", fileToAppend)
+}
+
+
+function appendWordsUnfilledTrialDataToFile(fileToAppend, dataArray) {
+  dataArray.push(os.EOL)
+  dataString = csvsync.stringify(dataArray)
+  if (!fs.existsSync(fileToAppend)) {
+    fs.appendFileSync(fileToAppend, wordsUnfilledHeader)
+    fs.appendFileSync(fileToAppend, dataArray)
+  } else {
+    fs.appendFileSync(fileToAppend, dataArray)
+  }
+  console.log("appended file: ", fileToAppend)
+}
+
+function appendNonWordsFilledTrialDataToFile(fileToAppend, dataArray) {
+  dataArray.push(os.EOL)
+  dataString = csvsync.stringify(dataArray)
+  if (!fs.existsSync(fileToAppend)) {
+    fs.appendFileSync(fileToAppend, nonWordsFilledHeader)
+    fs.appendFileSync(fileToAppend, dataArray)
+  } else {
+    fs.appendFileSync(fileToAppend, dataArray)
+  }
+  console.log("appended file: ", fileToAppend)
+}
+
+function appendNonWordsUnfilledTrialDataToFile(fileToAppend, dataArray) {
+  dataArray.push(os.EOL)
+  dataString = csvsync.stringify(dataArray)
+  if (!fs.existsSync(fileToAppend)) {
+    fs.appendFileSync(fileToAppend, nonWordsUnfilledHeader)
+    fs.appendFileSync(fileToAppend, dataArray)
+  } else {
+    fs.appendFileSync(fileToAppend, dataArray)
+  }
+  console.log("appended file: ", fileToAppend)
+}
+
+
+function appendTripletsA1TrialDataToFile(fileToAppend, dataArray) {
+  dataArray.push(os.EOL)
+  dataString = csvsync.stringify(dataArray)
+  if (!fs.existsSync(fileToAppend)) {
+    fs.appendFileSync(fileToAppend, tripletsA1Header)
+    fs.appendFileSync(fileToAppend, dataArray)
+  } else {
+    fs.appendFileSync(fileToAppend, dataArray)
+  }
+  console.log("appended file: ", fileToAppend)
+}
+
+function appendTripletsA2TrialDataToFile(fileToAppend, dataArray) {
+  dataArray.push(os.EOL)
+  dataString = csvsync.stringify(dataArray)
+  if (!fs.existsSync(fileToAppend)) {
+    fs.appendFileSync(fileToAppend, tripletsA2Header)
     fs.appendFileSync(fileToAppend, dataArray)
   } else {
     fs.appendFileSync(fileToAppend, dataArray)
@@ -499,13 +768,51 @@ function updateKeys() {
   keys.rt = 0
   console.log("key: " + keys.key)
   if (keys.key === '1' || keys.key === '2') {
-    if (assessment === 'palpa1') {
-      accuracy = checkPalpa1Accuracy()
+    if (assessment === 'wordsFilled') {
+      accuracy = checkWordsFilledAccuracy()
       console.log("accuracy: ", accuracy)
       keys.rt = getRT()
       console.log("RT: ", keys.rt)
-      appendPalpa1TrialDataToFile(palpa1FileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
-      showNextPalpa1Trial()
+      //appendWordsFilledTrialDataToFile(wordsFilledFileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+      showNextWordsFilledTrial()
+    } else if (assessment === 'wordsUnfilled') {
+      accuracy = checkWordsUnfilledAccuracy()
+      console.log("accuracy: ", accuracy)
+      keys.rt = getRT()
+      console.log("RT: ", keys.rt)
+      //appendWordsUnfilledTrialDataToFile(wordsUnfilledFileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+      showNextWordsUnfilledTrial()
+    } else if (assessment === 'nonWordsFilled') {
+      accuracy = checkNonWordsFilledAccuracy()
+      console.log("accuracy: ", accuracy)
+      keys.rt = getRT()
+      console.log("RT: ", keys.rt)
+      //appendNonWordsFilledTrialDataToFile(nonWordsFilledFileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+      showNextNonWordsFilledTrial()
+
+    } else if (assessment === 'nonWordsUnfilled') {
+      accuracy = checkNonWordsUnfilledAccuracy()
+      console.log("accuracy: ", accuracy)
+      keys.rt = getRT()
+      console.log("RT: ", keys.rt)
+      //appendNonWordsUnfilledTrialDataToFile(nonWordsUnfilledFileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+      showNextNonWordsUnfilledTrial()
+
+    } else if (assessment === 'tripletsA1') {
+      // accuracy = checkTripletsA1Accuracy()
+      // console.log("accuracy: ", accuracy)
+      // keys.rt = getRT()
+      // console.log("RT: ", keys.rt)
+      // showNextTripletsA1Trial()
+      //appendTripletsA1TrialDataToFile(tripletsA1FileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+
+    } else if (assessment === 'tripletsA2') {
+      // accuracy = checkTripletsA2Accuracy()
+      // console.log("accuracy: ", accuracy)
+      // keys.rt = getRT()
+      // console.log("RT: ", keys.rt)
+      // showNextTripletsA2Trial()
+      //appendTripletsA1TrialDataToFile(tripletsA1FileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
     }
   } else if (keys.key === 'ArrowLeft') {
 
@@ -520,7 +827,12 @@ var nav = {
 
 
 function clearAllTimeouts() {
-  clearTimeout(palpa1TimeoutID)
+  clearTimeout(wordsFilledTimeoutID)
+  clearTimeout(nonWordsFilledTimeoutID)
+  clearTimeout(wordsUnfilledTimeoutID)
+  clearTimeout(nonWordsUnfilledTimeoutID)
+  clearTimeout(tripletsA1TimeoutID)
+  clearTimeout(tripletsA2TimeoutID)
 }
 
 
@@ -589,8 +901,18 @@ function getStarted() {
     stopWebCamPreview()
     closeNav()
     resetTrialNumber()
-    if (assessment === 'palpa1') {
-      showPalpa1Instructions(palpa1Instructions)
+    if (assessment === 'wordsFilled') {
+      showWordsFilledInstructions(wordsFilledInstructions)
+    } else if (assessment === 'nonWordsFilled') {
+      showNonWordsFilledInstructions(nonWordsFilledInstructions)
+    } else if (assessment === 'wordsUnfilled') {
+      showWordsUnfilledInstructions(wordsUnfilledInstructions)
+    } else if (assessment === 'nonWordsUnfilled') {
+      showNonWordsUnfilledInstructions(nonWordsUnfilledInstructions)
+    } else if (assessment === 'tripletsA1') {
+      showTripletsA1Instructions(tripletsA1Instructions)
+    } else if (assessment === 'tripletsA2') {
+      showTripletsA2Instructions(tripletsA2Instructions)
     }
   }
 }
@@ -616,47 +938,273 @@ function showNextTrial() {
 }
 
 
-function showNextPalpa1Trial() {
-  clearTimeout(palpa1TimeoutID)
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+
+function showNumber() {
+  clearScreen()
+  randNumber = getRandomInt(1,9)
+  var textDiv = document.createElement("div")
+  textDiv.style.textAlign = 'center'
+  var p = document.createElement("p")
+  var txtNode = document.createTextNode(randNumber.toString())
+  p.appendChild(txtNode)
+  textDiv.appendChild(p)
+  content.appendChild(textDiv)
+}
+
+function showNumberSequence() {
+  var addedTime = 250
+  setTimeout(clearScreen, 1000+addedTime) //clear the screen 1.25 sec after first sound clip played
+  setTimeout(showNumber,2000+addedTime) // show the number sequence for filled trial types
+  setTimeout(showNumber,3000+addedTime)
+  setTimeout(showNumber,4000+addedTime)
+  setTimeout(showNumber,5000+addedTime) // one second between each one
+}
+
+
+function showNextWordsFilledTrial() {
+  clearTimeout(wordsFilledTimeoutID)
   closeNav()
   clearScreen()
   t += 1
-  if (t > maxNumberOfPalpa1Trials) {
+  if (t > maxNumberOfWordsFilledTrials) {
     clearScreen()
-    t = maxNumberOfPalpa1Trials+1
+    t = maxNumberOfWordsFilledTrials+1
     return false
   }
   var img = document.createElement("img")
   img.src = path.join(exp.mediapath, 'sound512px' + '.png')
   img.style.height = "40%"
   content.appendChild(img)
-  stimOnset = playAudio(path.join(palpa1MediaPath, palpa1Trials[t].name.trim()+'.wav'))
-  palpa1TimeoutID = setTimeout(showNextPalpa1Trial, palpa1TimeoutTime)
+  t1 = performance.now()
+  playAudio(path.join(wordsFilledMediaPath, 'audio', wordsFilledTrials[t].stim1.trim()+'.wav'))
+  showNumberSequence()
+  setTimeout(function() {
+    clearScreen()
+    t2 = performance.now()
+    console.log("time since first file played: ", t2-t1)
+    stimOnset = playAudio(path.join(wordsFilledMediaPath, 'audio', wordsFilledTrials[t].stim2.trim()+'.wav'))
+  }, 6000)
+  wordsFilledTimeoutID = setTimeout(showNextWordsFilledTrial, wordsFilledTimeoutTime)
   return stimOnset
 }
 
 
-function showPreviousPalpa1Trial() {
-  clearTimeout(palpa1TimeoutID)
+function showNextNonWordsFilledTrial() {
+  clearTimeout(nonWordsFilledTimeoutID)
   closeNav()
-  t -= 1
-  if (t < 0) {
-    t=0
-  }
   clearScreen()
+  t += 1
+  if (t > maxNumberOfNonWordsFilledTrials) {
+    clearScreen()
+    t = maxNumberOfNonWordsFilledTrials+1
+    return false
+  }
   var img = document.createElement("img")
   img.src = path.join(exp.mediapath, 'sound512px' + '.png')
   img.style.height = "40%"
   content.appendChild(img)
-  stimOnset = playAudio(path.join(palpa1MediaPath, palpa1Trials[t].name.trim()+'.wav'))
-  palpa1TimeoutID = setTimeout(showNextPalpa1Trial, palpa1TimeoutTime)
-  return getTime()
+  t1 = performance.now()
+  playAudio(path.join(nonWordsFilledMediaPath, 'audio', nonWordsFilledTrials[t].stim1.trim()+'.wav'))
+  showNumberSequence()
+  setTimeout(function() {
+    clearScreen()
+    t2 = performance.now()
+    console.log("time since first file played: ", t2-t1)
+    stimOnset = playAudio(path.join(nonWordsFilledMediaPath, 'audio', nonWordsFilledTrials[t].stim2.trim()+'.wav'))
+  }, 6000)
+  nonWordsFilledTimeoutID = setTimeout(showNextNonWordsFilledTrial, nonWordsFilledTimeoutTime)
+  return stimOnset
 }
+
+
+function showNextWordsUnfilledTrial() {
+  clearTimeout(wordsUnfilledTimeoutID)
+  closeNav()
+  clearScreen()
+  t += 1
+  if (t > maxNumberOfNonWordsUnfilledTrials) {
+    clearScreen()
+    t = maxNumberOfNonWordsUnfilledTrials+1
+    return false
+  }
+  var img = document.createElement("img")
+  img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+  img.style.height = "40%"
+  content.appendChild(img)
+  t1 = performance.now()
+  playAudio(path.join(wordsUnfilledMediaPath, 'audio', wordsUnfilledTrials[t].stim1.trim()+'.wav'))
+  //showNumberSequence()
+  setTimeout(function() {
+    clearScreen()
+    t2 = performance.now()
+    console.log("time since first file played: ", t2-t1)
+    stimOnset = playAudio(path.join(wordsUnfilledMediaPath, 'audio', wordsUnfilledTrials[t].stim2.trim()+'.wav'))
+  }, 6000)
+  wordsUnfilledTimeoutID = setTimeout(showNextWordsUnfilledTrial, wordsFilledTimeoutTime)
+  return stimOnset
+}
+
+
+function showNextNonWordsUnfilledTrial() {
+  clearTimeout(nonWordsUnfilledTimeoutID)
+  closeNav()
+  clearScreen()
+  t += 1
+  if (t > maxNumberOfNonWordsUnfilledTrials) {
+    clearScreen()
+    t = maxNumberOfNonWordsUnfilledTrials+1
+    return false
+  }
+  var img = document.createElement("img")
+  img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+  img.style.height = "40%"
+  content.appendChild(img)
+  t1 = performance.now()
+  playAudio(path.join(nonWordsUnfilledMediaPath, 'audio', nonWordsUnfilledTrials[t].stim1.trim()+'.wav'))
+  //showNumberSequence()
+  setTimeout(function() {
+    clearScreen()
+    t2 = performance.now()
+    console.log("time since first file played: ", t2-t1)
+    stimOnset = playAudio(path.join(nonWordsUnfilledMediaPath, 'audio', nonWordsUnfilledTrials[t].stim2.trim()+'.wav'))
+  }, 6000)
+  nonWordsUnfilledTimeoutID = setTimeout(showNextNonWordsUnfilledTrial, nonWordsUnfilledTimeoutTime)
+  return stimOnset
+}
+
+
+function showNextTripletsA1Trial() {
+  tripletResp = ['n','n','n']
+  clickCount = 0
+  clearTimeout(tripletsA1TimeoutID)
+  closeNav()
+  clearScreen()
+  t += 1
+  if (t > maxNumberOfTripletsA1Trials) {
+    clearScreen()
+    t = maxNumberOfTripletsA1Trials+1
+    return false
+  }
+  var img1 = document.createElement("img")
+  var img2 = document.createElement("img")
+  var img3 = document.createElement("img")
+  img1.src = path.join(tripletsA1MediaPath, 'pics', tripletsA1Trials[t].stim1.trim()+'.bmp')
+  img2.src = path.join(tripletsA1MediaPath, 'pics', tripletsA1Trials[t].stim2.trim()+'.bmp')
+  img3.src = path.join(tripletsA1MediaPath, 'pics', tripletsA1Trials[t].stim3.trim()+'.bmp')
+  img1.style = "flex: 0 1 auto; align-self: flex-start; margin 10px; width: 200px; height: 200px;"
+  img2.style = "flex: 0 1 auto; align-self: center; margin 10px; width: 200px; height: 200px;"
+  img3.style = "flex: 0 1 auto; align-self: flex-end; margin 10px; width: 200px; height: 200px;"
+  img1.onclick = function () {
+    addClickToCounter(1)
+  }
+  img2.onclick = function () {
+    addClickToCounter(2)
+  }
+  img3.onclick = function () {
+    addClickToCounter(3)
+  }
+  content.appendChild(img1)
+  content.appendChild(img2)
+  content.appendChild(img3)
+  t1 = performance.now()
+  playAudio(path.join(tripletsA1MediaPath, 'audio', tripletsA1Trials[t].stim1.trim()+'.wav'))
+  setTimeout(function () {
+    playAudio(path.join(tripletsA1MediaPath, 'audio', tripletsA1Trials[t].stim2.trim()+'.wav'))
+  }, 1500)
+  setTimeout(function () {
+    playAudio(path.join(tripletsA1MediaPath, 'audio', tripletsA1Trials[t].stim3.trim()+'.wav'))
+  }, 3000)
+  tripletsA1TimeoutID = setTimeout(showNextTripletsA1Trial, tripletsA1TimeoutTime)
+  return stimOnset
+}
+
+
+function showNextTripletsA2Trial() {
+  tripletResp = ['n','n','n']
+  clickCount = 0
+  clearTimeout(tripletsA2TimeoutID)
+  closeNav()
+  clearScreen()
+  t += 1
+  if (t > maxNumberOfTripletsA2Trials) {
+    clearScreen()
+    t = maxNumberOfTripletsA2Trials+1
+    return false
+  }
+  var img1 = document.createElement("img")
+  var img2 = document.createElement("img")
+  var img3 = document.createElement("img")
+  img1.src = path.join(tripletsA2MediaPath, 'pics', tripletsA2Trials[t].stim1.trim()+'.bmp')
+  img2.src = path.join(tripletsA2MediaPath, 'pics', tripletsA2Trials[t].stim2.trim()+'.bmp')
+  img3.src = path.join(tripletsA2MediaPath, 'pics', tripletsA2Trials[t].stim3.trim()+'.bmp')
+  img1.style = "flex: 0 1 auto; align-self: flex-start; margin 10px; width: 200px; height: 200px;"
+  img2.style = "flex: 0 1 auto; align-self: center; margin 10px; width: 200px; height: 200px;"
+  img3.style = "flex: 0 1 auto; align-self: flex-end; margin 10px; width: 200px; height: 200px;"
+  img1.onclick = function () {
+    addClickToCounter(1)
+  }
+  img2.onclick = function () {
+    addClickToCounter(2)
+  }
+  img3.onclick = function () {
+    addClickToCounter(3)
+  }
+  content.appendChild(img1)
+  content.appendChild(img2)
+  content.appendChild(img3)
+  t1 = performance.now()
+  playAudio(path.join(tripletsA2MediaPath, 'audio', tripletsA2Trials[t].stim1.trim()+'.wav'))
+  setTimeout(function () {
+    playAudio(path.join(tripletsA2MediaPath, 'audio', tripletsA2Trials[t].stim2.trim()+'.wav'))
+  }, 1500)
+  setTimeout(function () {
+    playAudio(path.join(tripletsA2MediaPath, 'audio', tripletsA2Trials[t].stim3.trim()+'.wav'))
+  }, 3000)
+  tripletsA2TimeoutID = setTimeout(showNextTripletsA2Trial, tripletsA2TimeoutTime)
+  return stimOnset
+}
+
+
+
+function addClickToCounter(imgIdx) {
+  clickCount  += 1
+  console.log("Clicked!")
+  tripletResp[imgIdx-1] = 'y'
+  console.log("tripletResp: ", tripletResp)
+  if (clickCount < 2) {
+  } else {
+    //console.log("tripletResp: ", tripletResp)
+    if (assessment === 'tripletsA1') {
+      accuracy = checkTripletsA1Accuracy()
+      console.log("accuracy: ", accuracy)
+      // keys.rt = getRT()
+      // console.log("RT: ", keys.rt)
+      //appendNonWordsFilledTrialDataToFile(nonWordsFilledFileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+      showNextTripletsA1Trial()
+    } else if (assessment === 'tripletsA2') {
+      accuracy = checkTripletsA2Accuracy()
+      console.log("accuracy: ", accuracy)
+      // keys.rt = getRT()
+      // console.log("RT: ", keys.rt)
+      //appendNonWordsFilledTrialDataToFile(nonWordsFilledFileToSave, [subjID, sessID, assessment, palpa1Trials[t].name.trim(), palpa1Trials[t].diffLoc.trim(), palpa1Trials[t].diffType.trim(), keys.key, keys.rt, accuracy])
+      showNextTripletsA2Trial()
+    }
+    clickCount = 0
+  }
+}
+
 
 
 function resetTrialNumber() {
   t = 0
 }
+
 
 
 
