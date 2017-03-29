@@ -41,6 +41,19 @@ var tripletsA1TimeoutTime = 1000*30
 var tripletsA2TimeoutTime = 1000*30
 var imgTimeoutID
 var imgDurationMS = 1000*2 // 2 seconds
+var numberTimeout1
+var numberTimeout2
+var numberTimeout3
+var numberTimeout4
+var numberTimeout5
+var wordsFilledStim2Timeout
+var wordsUnfilledStim2Timeout
+var nonWordsFilledStim2Timeout
+var nonWordsUnfilledStim2Timeout
+var tripletA1AudioTimeout1
+var tripletA1AudioTimeout2
+var tripletA2AudioTimeout1
+var tripletA2AudioTimeout2
 exp.getRootPath()
 exp.getMediaPath()
 var wordsFilledMediaPath = path.resolve(exp.mediapath, 'wordsFilled', 'media')
@@ -311,8 +324,11 @@ function chooseFile() {
 }
 
 
-function analyzeSelectedFile(filePath) {
+function analyzeSelectedFile(theChosenOne) {
+  filePath = theChosenOne[0]
   console.log("file chosen: ", filePath)
+  data = readCSV(filePath)
+  len = data.length
 }
 
 
@@ -350,8 +366,10 @@ function readCSV(filename){
 // remove all child elements from a div, here the convention will be to
 // remove the elements from "contentDiv" after a trial
 function clearScreen() {
-  while (content.hasChildNodes())
-  content.removeChild(content.lastChild)
+  while (content.hasChildNodes()) {
+    content.removeChild(content.lastChild)
+  }
+  console.log("cleared the screen!")
 }
 
 
@@ -549,6 +567,16 @@ function unloadJS (ID) {
     document.body.removeChild(scrElement)
     console.log('removed: ', ID +'JS')
   }
+}
+
+function waitSecs(secs) {
+  var start = performance.now()
+  console.log("waitSecs started at: ", start)
+  var end = start
+  while(end < (start + (secs*1000))) {
+    end = performance.now()
+ }
+ console.log("waitSecs waited: ", end-start)
 }
 
 
@@ -784,11 +812,13 @@ function appendTripletsA2TrialDataToFile(fileToAppend, dataArray) {
 // update keys object when a keydown event is detected
 function updateKeys() {
   // gets called from: document.addEventListener('keydown', updateKeys);
+  iti = 1500 // milliseconds
   keys.key = event.key
   keys.time = performance.now() // gives ms
   keys.rt = 0
   console.log("key: " + keys.key)
   if (keys.key === '1' || keys.key === '2') {
+    clearScreen()
     if (assessment === 'wordsFilled') {
       accuracy = checkWordsFilledAccuracy()
       console.log("accuracy: ", accuracy)
@@ -796,21 +826,22 @@ function updateKeys() {
       console.log("RT: ", keys.rt)
       //['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
       appendWordsFilledTrialDataToFile(wordsFilledFileToSave, [subjID, sessID, assessment, wordsFilledTrials[t].stim1.trim(), wordsFilledTrials[t].stim2.trim(), wordsFilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
-      showNextWordsFilledTrial()
+      //waitSecs(1.5)
+      setTimeout(showNextWordsFilledTrial, iti)
     } else if (assessment === 'wordsUnfilled') {
       accuracy = checkWordsUnfilledAccuracy()
       console.log("accuracy: ", accuracy)
       keys.rt = getRT()
       console.log("RT: ", keys.rt)
       appendWordsUnfilledTrialDataToFile(wordsUnfilledFileToSave, [subjID, sessID, assessment, wordsUnfilledTrials[t].stim1.trim(), wordsUnfilledTrials[t].stim2.trim(), wordsUnfilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
-      showNextWordsUnfilledTrial()
+      setTimeout(showNextWordsUnfilledTrial, iti)
     } else if (assessment === 'nonWordsFilled') {
       accuracy = checkNonWordsFilledAccuracy()
       console.log("accuracy: ", accuracy)
       keys.rt = getRT()
       console.log("RT: ", keys.rt)
       appendNonWordsFilledTrialDataToFile(nonWordsFilledFileToSave, [subjID, sessID, assessment, nonWordsFilledTrials[t].stim1.trim(), nonWordsFilledTrials[t].stim2.trim(), nonWordsFilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
-      showNextNonWordsFilledTrial()
+      setTimeout(showNextNonWordsFilledTrial, iti)
 
     } else if (assessment === 'nonWordsUnfilled') {
       accuracy = checkNonWordsUnfilledAccuracy()
@@ -818,12 +849,7 @@ function updateKeys() {
       keys.rt = getRT()
       console.log("RT: ", keys.rt)
       appendNonWordsUnfilledTrialDataToFile(nonWordsUnfilledFileToSave, [subjID, sessID, assessment, nonWordsUnfilledTrials[t].stim1.trim(), nonWordsUnfilledTrials[t].stim2.trim(), nonWordsUnfilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
-      showNextNonWordsUnfilledTrial()
-
-    } else if (assessment === 'tripletsA1') {
-
-    } else if (assessment === 'tripletsA2') {
-
+      setTimeout(showNextNonWordsUnfilledTrial, iti)
     }
   } else if (keys.key === 'ArrowLeft') {
 
@@ -844,6 +870,19 @@ function clearAllTimeouts() {
   clearTimeout(nonWordsUnfilledTimeoutID)
   clearTimeout(tripletsA1TimeoutID)
   clearTimeout(tripletsA2TimeoutID)
+  clearTimeout(numberTimeout1)
+  clearTimeout(numberTimeout2)
+  clearTimeout(numberTimeout3)
+  clearTimeout(numberTimeout4)
+  clearTimeout(numberTimeout5)
+  clearTimeout(wordsFilledStim2Timeout)
+  clearTimeout(wordsUnfilledStim2Timeout)
+  clearTimeout(nonWordsFilledStim2Timeout)
+  clearTimeout(nonWordsUnfilledStim2Timeout)
+  clearTimeout(tripletA1AudioTimeout1)
+  clearTimeout(tripletA1AudioTimeout2)
+  clearTimeout(tripletA2AudioTimeout1)
+  clearTimeout(tripletA2AudioTimeout2)
 }
 
 
@@ -972,17 +1011,17 @@ function showNumber(randNumber) {
 function showNumberSequence() {
   var randomNumbers = shuffle(randomArray)
   var addedTime = 250
-  setTimeout(clearScreen, 1000+addedTime) //clear the screen 1.25 sec after first sound clip played
-  setTimeout(function () {
+  numberTimeout1 = setTimeout(clearScreen, 1000+addedTime) //clear the screen 1.25 sec after first sound clip played
+  numberTimeout2 = setTimeout(function () {
     showNumber(randomNumbers[0])
   },2000+addedTime) // show the number sequence for filled trial types
-  setTimeout(function() {
+  numberTimeout3 = setTimeout(function() {
     showNumber(randomNumbers[1])
   },3000+addedTime)
-  setTimeout(function() {
+  numberTimeout4 = setTimeout(function() {
     showNumber(randomNumbers[2])
   },4000+addedTime)
-  setTimeout(function() {
+  numberTimeout5 = setTimeout(function() {
     showNumber(randomNumbers[3])
   },5000+addedTime) // one second between each one
 }
@@ -1005,8 +1044,12 @@ function showNextWordsFilledTrial() {
   t1 = performance.now()
   playAudio(path.join(wordsFilledMediaPath, 'audio', wordsFilledTrials[t].stim1.trim()+'.wav'))
   showNumberSequence()
-  setTimeout(function() {
+  wordsFilledStim2Timeout = setTimeout(function() {
     clearScreen()
+    var img = document.createElement("img")
+    img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+    img.style.height = "40%"
+    content.appendChild(img)
     t2 = performance.now()
     console.log("time since first file played: ", t2-t1)
     stimOnset = playAudio(path.join(wordsFilledMediaPath, 'audio', wordsFilledTrials[t].stim2.trim()+'.wav'))
@@ -1033,8 +1076,12 @@ function showNextNonWordsFilledTrial() {
   t1 = performance.now()
   playAudio(path.join(nonWordsFilledMediaPath, 'audio', nonWordsFilledTrials[t].stim1.trim()+'.wav'))
   showNumberSequence()
-  setTimeout(function() {
+  nonWordsFilledStim2Timeout = setTimeout(function() {
     clearScreen()
+    var img = document.createElement("img")
+    img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+    img.style.height = "40%"
+    content.appendChild(img)
     t2 = performance.now()
     console.log("time since first file played: ", t2-t1)
     stimOnset = playAudio(path.join(nonWordsFilledMediaPath, 'audio', nonWordsFilledTrials[t].stim2.trim()+'.wav'))
@@ -1061,8 +1108,12 @@ function showNextWordsUnfilledTrial() {
   t1 = performance.now()
   playAudio(path.join(wordsUnfilledMediaPath, 'audio', wordsUnfilledTrials[t].stim1.trim()+'.wav'))
   //showNumberSequence()
-  setTimeout(function() {
+  wordsUnfilledStim2Timeout = setTimeout(function() {
     clearScreen()
+    var img = document.createElement("img")
+    img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+    img.style.height = "40%"
+    content.appendChild(img)
     t2 = performance.now()
     console.log("time since first file played: ", t2-t1)
     stimOnset = playAudio(path.join(wordsUnfilledMediaPath, 'audio', wordsUnfilledTrials[t].stim2.trim()+'.wav'))
@@ -1089,8 +1140,12 @@ function showNextNonWordsUnfilledTrial() {
   t1 = performance.now()
   playAudio(path.join(nonWordsUnfilledMediaPath, 'audio', nonWordsUnfilledTrials[t].stim1.trim()+'.wav'))
   //showNumberSequence()
-  setTimeout(function() {
+  nonWordsUnfilledStim2Timeout = setTimeout(function() {
     clearScreen()
+    var img = document.createElement("img")
+    img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+    img.style.height = "40%"
+    content.appendChild(img)
     t2 = performance.now()
     console.log("time since first file played: ", t2-t1)
     stimOnset = playAudio(path.join(nonWordsUnfilledMediaPath, 'audio', nonWordsUnfilledTrials[t].stim2.trim()+'.wav'))
@@ -1135,10 +1190,10 @@ function showNextTripletsA1Trial() {
   content.appendChild(img3)
   t1 = performance.now()
   playAudio(path.join(tripletsA1MediaPath, 'audio', tripletsA1Trials[t].stim1.trim()+'.wav'))
-  setTimeout(function () {
+  tripletA1AudioTimeout1 = setTimeout(function () {
     playAudio(path.join(tripletsA1MediaPath, 'audio', tripletsA1Trials[t].stim2.trim()+'.wav'))
   }, 1500)
-  setTimeout(function () {
+  tripletA1AudioTimeout2 = setTimeout(function () {
     playAudio(path.join(tripletsA1MediaPath, 'audio', tripletsA1Trials[t].stim3.trim()+'.wav'))
   }, 3000)
   tripletsA1TimeoutID = setTimeout(showNextTripletsA1Trial, tripletsA1TimeoutTime)
@@ -1181,10 +1236,10 @@ function showNextTripletsA2Trial() {
   content.appendChild(img3)
   t1 = performance.now()
   playAudio(path.join(tripletsA2MediaPath, 'audio', tripletsA2Trials[t].stim1.trim()+'.wav'))
-  setTimeout(function () {
+  tripletA2AudioTimeout1 = setTimeout(function () {
     playAudio(path.join(tripletsA2MediaPath, 'audio', tripletsA2Trials[t].stim2.trim()+'.wav'))
   }, 1500)
-  setTimeout(function () {
+  tripletA2AudioTimeout2 = setTimeout(function () {
     playAudio(path.join(tripletsA2MediaPath, 'audio', tripletsA2Trials[t].stim3.trim()+'.wav'))
   }, 3000)
   tripletsA2TimeoutID = setTimeout(showNextTripletsA2Trial, tripletsA2TimeoutTime)
