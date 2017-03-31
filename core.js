@@ -12,9 +12,7 @@ const ffmpeg = appRootDir+'/ffmpeg/ffmpeg'
 const exec = require( 'child_process' ).exec
 const si = require('systeminformation');
 const naturalSort = require('node-natural-sort')
-var userDataPath = path.join(app.getPath('userData'),'Data');
-makeSureUserDataFolderIsThere()
-console.log('user path: ', userDataPath)
+const mkdirp = require('mkdirp');
 var moment = require('moment')
 var content = document.getElementById("contentDiv")
 var localMediaStream
@@ -106,6 +104,30 @@ var tripletsA2Instructions = 'triplets A2'
 var clickCount = 0
 var tripletResp = ['n','n','n']
 var randomArray = [1,2,3,4,5,6,7,8,9]
+var userDataPath = path.join(app.getPath('userData'),'Data')
+makeSureUserDataFolderIsThere()
+var savePath
+
+
+
+
+
+
+function getSubjID() {
+  var subjID = document.getElementById("subjID").value
+  if (subjID === '') {
+    subjID = '0'
+  }
+  return subjID
+}
+
+function getSessID() {
+  var sessID = document.getElementById("sessID").value
+  if (sessID === '') {
+    sessID = '0'
+  }
+  return sessID
+}
 
 
 
@@ -299,9 +321,9 @@ function ff() {
 
 // open data folder in finder
 function openDataFolder() {
-  dataFolder = userDataPath
+  dataFolder = savePath
   if (!fs.existsSync(dataFolder)) {
-    fs.mkdirSync(dataFolder)
+    mkdirp.sync(dataFolder)
   }
   shell.showItemInFolder(dataFolder)
 }
@@ -318,7 +340,7 @@ function chooseFile() {
   console.log("Analyze a file!")
   dialog.showOpenDialog(
     {title: "Memory Analysis",
-    defaultPath: userDataPath,
+    defaultPath: savePath,
     properties: ["openFile"]},
   analyzeSelectedFile)
 }
@@ -375,7 +397,11 @@ function clearScreen() {
 
 // show text instructions on screen
 function showWordsFilledInstructions(txt) {
-  wordsFilledFileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
+  dir = path.join(savePath, 'PolarData', assessment, getSubjID(), getSessID())
+  if (!fs.existsSync(dir)) {
+    mkdirp.sync(dir)
+  }
+  wordsFilledFileToSave = path.join(dir,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
   clearScreen()
   //rec.startRec()
   var textDiv = document.createElement("div")
@@ -398,7 +424,11 @@ function showWordsFilledInstructions(txt) {
 }
 
 function showNonWordsFilledInstructions(txt) {
-  nonWordsFilledFileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
+  dir = path.join(savePath, 'PolarData', assessment, getSubjID(), getSessID())
+  if (!fs.existsSync(dir)) {
+    mkdirp.sync(dir)
+  }
+  nonWordsFilledFileToSave = path.join(dir,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
   clearScreen()
   //rec.startRec()
   var textDiv = document.createElement("div")
@@ -421,7 +451,11 @@ function showNonWordsFilledInstructions(txt) {
 }
 
 function showWordsUnfilledInstructions(txt) {
-  wordsUnfilledFileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
+  dir = path.join(savePath, 'PolarData', assessment, getSubjID(), getSessID())
+  if (!fs.existsSync(dir)) {
+    mkdirp.sync(dir)
+  }
+  wordsUnfilledFileToSave = path.join(dir,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
   clearScreen()
   //rec.startRec()
   var textDiv = document.createElement("div")
@@ -445,7 +479,11 @@ function showWordsUnfilledInstructions(txt) {
 
 
 function showNonWordsUnfilledInstructions(txt) {
-  nonWordsUnfilledFileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
+  dir = path.join(savePath, 'PolarData', assessment, getSubjID(), getSessID())
+  if (!fs.existsSync(dir)) {
+    mkdirp.sync(dir)
+  }
+  nonWordsUnfilledFileToSave = path.join(dir,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
   clearScreen()
   //rec.startRec()
   var textDiv = document.createElement("div")
@@ -469,7 +507,11 @@ function showNonWordsUnfilledInstructions(txt) {
 
 
 function showTripletsA1Instructions(txt) {
-  tripletsA1FileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
+  dir = path.join(savePath, 'PolarData', assessment, getSubjID(), getSessID())
+  if (!fs.existsSync(dir)) {
+    mkdirp.sync(dir)
+  }
+  tripletsA1FileToSave = path.join(dir,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
   clearScreen()
   //rec.startRec()
   var textDiv = document.createElement("div")
@@ -493,7 +535,11 @@ function showTripletsA1Instructions(txt) {
 
 
 function showTripletsA2Instructions(txt) {
-  tripletsA2FileToSave = path.join(userDataPath,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
+  dir = path.join(savePath, 'PolarData', assessment, getSubjID(), getSessID())
+  if (!fs.existsSync(dir)) {
+    mkdirp.sync(dir)
+  }
+  tripletsA2FileToSave = path.join(dir,subjID+'_'+sessID+'_'+assessment+'_'+getDateStamp()+'.csv')
   clearScreen()
   //rec.startRec()
   var textDiv = document.createElement("div")
@@ -1288,7 +1334,3 @@ function resetTrialNumber() {
 // event listeners that are active for the life of the application
 document.addEventListener('keyup', checkForEscape)
 document.addEventListener('keyup', updateKeys)
-// document.getElementById("videoElement").style.visibility = "hidden"
-// document.getElementById("textElement").style.visibility = "hidden"
-// document.getElementById("audioElement").style.visibility = "hidden"
-// document.getElementById("buttonElement").style.visibility = "hidden"
