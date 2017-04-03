@@ -95,12 +95,18 @@ var rt
 var t = -1
 var tReal = t-1
 lowLag.init(); // init audio functions
-var wordsFilledInstructions = "words filled"
-var wordsUnfilledInstructions = 'words unfilled'
-var nonWordsFilledInstructions = "non words filled"
-var nonWordsUnfilledInstructions = 'non words unfilled'
-var tripletsA1Instructions = 'triplets A1'
-var tripletsA2Instructions = 'triplets A2'
+var wordsFilledInstructions = ["Please judge if the words rhyme or not. " +
+                    "When you see numbers, say them out loud. " +
+                    "Press the GREEN button if they rhyme. " +
+                    "Press the RED button if they do not rhyme. "]
+var wordsUnfilledInstructions = ["Please judge if the words rhyme or not. " +
+                    "Press the GREEN button if they rhyme. " +
+                    "Press the RED button if they do not rhyme. "]
+var nonWordsFilledInstructions = wordsFilledInstructions
+var nonWordsUnfilledInstructions = wordsUnfilledInstructions
+var tripletsA1Instructions = ["You will see three pictures and hear three words. " +
+                    "Click on the two pictures with rhyming names. "]
+var tripletsA2Instructions = tripletsA1Instructions
 var clickCount = 0
 var tripletResp = ['n','n','n']
 var randomArray = [1,2,3,4,5,6,7,8,9]
