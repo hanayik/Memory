@@ -95,15 +95,30 @@ var rt
 var t = -1
 var tReal = t-1
 lowLag.init(); // init audio functions
-var wordsFilledInstructions = ["Please judge if the words rhyme or not. " +
-                    "When you see numbers, say them out loud. " +
-                    "Press the GREEN button if they rhyme. " +
-                    "Press the RED button if they do not rhyme. "]
-var wordsUnfilledInstructions = ["Please judge if the words rhyme or not. " +
-                    "Press the GREEN button if they rhyme. " +
-                    "Press the RED button if they do not rhyme. "]
-var nonWordsFilledInstructions = wordsFilledInstructions
-var nonWordsUnfilledInstructions = wordsUnfilledInstructions
+var wordsFilledInstructions = ["<h1>In this task you will hear two words. <br> " +
+                    "You will hear one word, then you will seee a series of 4 numbers on the screen. <br>" +
+                    "When you see each number say it out loud. <br>" +
+                    "After hearing both words, you decide if they rhyme or not. <br> " +
+                    "If they do RHYME, press the <span style='color:green'>GREEN</span> button. <br> " +
+                    "If they DO NOT RHYME, press the <span style='color:red'>RED</span> button. </h1>"]
+var wordsUnfilledInstructions = ["<h1>In this task you will hear two words. <br>" +
+                    "You will hear one word and then 5 seconds later the second word. <br> " +
+                    "After hearing both words, you decide if they rhyme or not. <br> " +
+                    "If they do RHYME, press the <span style='color:green'>GREEN</span> button. <br> " +
+                    "If they DO NOT RHYME, press the <span style='color:red'>RED</span> button. </h1>"]
+var nonWordsFilledInstructions = ["<h1>In this task you will hear two items that are not real words. <br>" +
+                    "They may sound like real words but they are not. <br> " +
+                    "You will hear one word, then you will seee a series of 4 numbers on the screen. <br>" +
+                    "When you see each number say it out loud. <br>" +
+                    "After hearing both words, you decide if they rhyme or not. <br> " +
+                    "If they do RHYME, press the <span style='color:green'>GREEN</span> button. <br> " +
+                    "If they DO NOT RHYME, press the <span style='color:red'>RED</span> button. </h1>"]
+var nonWordsUnfilledInstructions = ["<h1>In this task you will hear two items that are not real words. <br>" +
+                    "They may sound like real words but they are not. <br> " +
+                    "You will hear one word and then 5 seconds later the second word. <br> " +
+                    "After hearing both words, you decide if they rhyme or not. <br> " +
+                    "If they do RHYME, press the <span style='color:green'>GREEN</span> button. <br> " +
+                    "If they DO NOT RHYME, press the <span style='color:red'>RED</span> button. </h1>"]
 var tripletsA1Instructions = ["You will see three pictures and hear three words. " +
                     "Click on the two pictures with rhyming names. "]
 var tripletsA2Instructions = tripletsA1Instructions
@@ -413,8 +428,9 @@ function showWordsFilledInstructions(txt) {
   var textDiv = document.createElement("div")
   textDiv.style.textAlign = 'center'
   var p = document.createElement("p")
-  var txtNode = document.createTextNode(txt)
-  p.appendChild(txtNode)
+  //var txtNode = document.createTextNode(txt)
+  //p.appendChild(txtNode)
+  p.innerHTML = txt
   textDiv.appendChild(p)
   var lineBreak = document.createElement("br")
   var btnDiv = document.createElement("div")
@@ -440,8 +456,9 @@ function showNonWordsFilledInstructions(txt) {
   var textDiv = document.createElement("div")
   textDiv.style.textAlign = 'center'
   var p = document.createElement("p")
-  var txtNode = document.createTextNode(txt)
-  p.appendChild(txtNode)
+  //var txtNode = document.createTextNode(txt)
+  //p.appendChild(txtNode)
+  p.innerHTML = txt
   textDiv.appendChild(p)
   var lineBreak = document.createElement("br")
   var btnDiv = document.createElement("div")
@@ -467,8 +484,9 @@ function showWordsUnfilledInstructions(txt) {
   var textDiv = document.createElement("div")
   textDiv.style.textAlign = 'center'
   var p = document.createElement("p")
-  var txtNode = document.createTextNode(txt)
-  p.appendChild(txtNode)
+  //var txtNode = document.createTextNode(txt)
+  //p.appendChild(txtNode)
+  p.innerHTML = txt
   textDiv.appendChild(p)
   var lineBreak = document.createElement("br")
   var btnDiv = document.createElement("div")
@@ -495,8 +513,9 @@ function showNonWordsUnfilledInstructions(txt) {
   var textDiv = document.createElement("div")
   textDiv.style.textAlign = 'center'
   var p = document.createElement("p")
-  var txtNode = document.createTextNode(txt)
-  p.appendChild(txtNode)
+  //var txtNode = document.createTextNode(txt)
+  //p.appendChild(txtNode)
+  p.innerHTML = txt
   textDiv.appendChild(p)
   var lineBreak = document.createElement("br")
   var btnDiv = document.createElement("div")
