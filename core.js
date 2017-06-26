@@ -119,8 +119,8 @@ var nonWordsUnfilledInstructions = ["<h1>In this task you will hear two items th
                     "After hearing both words, you decide if they rhyme or not. <br> " +
                     "If they do RHYME, press the <span style='color:green'>GREEN</span> button. <br> " +
                     "If they DO NOT RHYME, press the <span style='color:red'>RED</span> button. </h1>"]
-var tripletsA1Instructions = ["You will see three pictures and hear three words. " +
-                    "Click on the two pictures with rhyming names. "]
+var tripletsA1Instructions = ["<h1>You will see three pictures and hear three words. " +
+                    "Click on the two pictures with rhyming names. </h1>"]
 var tripletsA2Instructions = tripletsA1Instructions
 var clickCount = 0
 var tripletResp = ['n','n','n']
@@ -437,6 +437,7 @@ function showWordsFilledInstructions(txt) {
   var startBtn = document.createElement("button")
   var startBtnTxt = document.createTextNode("Start")
   startBtn.appendChild(startBtnTxt)
+  startBtn.className = 'startBtn'
   startBtn.onclick = showNextWordsFilledTrial
   btnDiv.appendChild(startBtn)
   content.appendChild(textDiv)
@@ -465,6 +466,7 @@ function showNonWordsFilledInstructions(txt) {
   var startBtn = document.createElement("button")
   var startBtnTxt = document.createTextNode("Start")
   startBtn.appendChild(startBtnTxt)
+  startBtn.className = 'startBtn'
   startBtn.onclick = showNextNonWordsFilledTrial
   btnDiv.appendChild(startBtn)
   content.appendChild(textDiv)
@@ -493,6 +495,7 @@ function showWordsUnfilledInstructions(txt) {
   var startBtn = document.createElement("button")
   var startBtnTxt = document.createTextNode("Start")
   startBtn.appendChild(startBtnTxt)
+  startBtn.className = 'startBtn'
   startBtn.onclick = showNextWordsUnfilledTrial
   btnDiv.appendChild(startBtn)
   content.appendChild(textDiv)
@@ -522,6 +525,7 @@ function showNonWordsUnfilledInstructions(txt) {
   var startBtn = document.createElement("button")
   var startBtnTxt = document.createTextNode("Start")
   startBtn.appendChild(startBtnTxt)
+  startBtn.className = 'startBtn'
   startBtn.onclick = showNextNonWordsUnfilledTrial
   btnDiv.appendChild(startBtn)
   content.appendChild(textDiv)
@@ -542,14 +546,16 @@ function showTripletsA1Instructions(txt) {
   var textDiv = document.createElement("div")
   textDiv.style.textAlign = 'center'
   var p = document.createElement("p")
-  var txtNode = document.createTextNode(txt)
-  p.appendChild(txtNode)
+  // var txtNode = document.createTextNode(txt)
+  // p.appendChild(txtNode)
+  p.innerHTML = txt
   textDiv.appendChild(p)
   var lineBreak = document.createElement("br")
   var btnDiv = document.createElement("div")
   var startBtn = document.createElement("button")
   var startBtnTxt = document.createTextNode("Start")
   startBtn.appendChild(startBtnTxt)
+  startBtn.className = 'startBtn'
   startBtn.onclick = showNextTripletsA1Trial
   btnDiv.appendChild(startBtn)
   content.appendChild(textDiv)
@@ -570,14 +576,16 @@ function showTripletsA2Instructions(txt) {
   var textDiv = document.createElement("div")
   textDiv.style.textAlign = 'center'
   var p = document.createElement("p")
-  var txtNode = document.createTextNode(txt)
-  p.appendChild(txtNode)
+  // var txtNode = document.createTextNode(txt)
+  // p.appendChild(txtNode)
+  p.innerHTML = txt
   textDiv.appendChild(p)
   var lineBreak = document.createElement("br")
   var btnDiv = document.createElement("div")
   var startBtn = document.createElement("button")
   var startBtnTxt = document.createTextNode("Start")
   startBtn.appendChild(startBtnTxt)
+  startBtn.className = 'startBtn'
   startBtn.onclick = showNextTripletsA2Trial
   btnDiv.appendChild(startBtn)
   content.appendChild(textDiv)
@@ -1050,10 +1058,10 @@ function showNextTrial() {
     return false
   }
   picNum.value = t
-  var img = document.createElement("img")
-  img.src = path.join(exp.mediapath, 'pics', trials[t].PictureName.trim() + '.png')
   playAudio(path.join(exp.mediapath, 'beep.wav'))
-  content.appendChild(img)
+  // var img = document.createElement("img")
+  // img.src = path.join(exp.mediapath, 'pics', trials[t].PictureName.trim() + '.png')
+  // content.appendChild(img)
   trialTimeoutID = setTimeout(showNextTrial, 1000 * timeoutTime)
   return getTime()
 }
@@ -1108,19 +1116,19 @@ function showNextWordsFilledTrial() {
     t = maxNumberOfWordsFilledTrials+1
     return false
   }
-  var img = document.createElement("img")
-  img.src = path.join(exp.mediapath, 'sound512px' + '.png')
-  img.style.height = "40%"
-  content.appendChild(img)
+  // var img = document.createElement("img")
+  // img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+  // img.style.height = "40%"
+  // content.appendChild(img)
   t1 = performance.now()
   playAudio(path.join(wordsFilledMediaPath, 'audio', wordsFilledTrials[t].stim1.trim()+'.wav'))
   showNumberSequence()
   wordsFilledStim2Timeout = setTimeout(function() {
     clearScreen()
-    var img = document.createElement("img")
-    img.src = path.join(exp.mediapath, 'sound512px' + '.png')
-    img.style.height = "40%"
-    content.appendChild(img)
+    // var img = document.createElement("img")
+    // img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+    // img.style.height = "40%"
+    // content.appendChild(img)
     t2 = performance.now()
     console.log("time since first file played: ", t2-t1)
     stimOnset = playAudio(path.join(wordsFilledMediaPath, 'audio', wordsFilledTrials[t].stim2.trim()+'.wav'))
@@ -1140,19 +1148,19 @@ function showNextNonWordsFilledTrial() {
     t = maxNumberOfNonWordsFilledTrials+1
     return false
   }
-  var img = document.createElement("img")
-  img.src = path.join(exp.mediapath, 'sound512px' + '.png')
-  img.style.height = "40%"
-  content.appendChild(img)
+  // var img = document.createElement("img")
+  // img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+  // img.style.height = "40%"
+  // content.appendChild(img)
   t1 = performance.now()
   playAudio(path.join(nonWordsFilledMediaPath, 'audio', nonWordsFilledTrials[t].stim1.trim()+'.wav'))
   showNumberSequence()
   nonWordsFilledStim2Timeout = setTimeout(function() {
     clearScreen()
-    var img = document.createElement("img")
-    img.src = path.join(exp.mediapath, 'sound512px' + '.png')
-    img.style.height = "40%"
-    content.appendChild(img)
+    // var img = document.createElement("img")
+    // img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+    // img.style.height = "40%"
+    // content.appendChild(img)
     t2 = performance.now()
     console.log("time since first file played: ", t2-t1)
     stimOnset = playAudio(path.join(nonWordsFilledMediaPath, 'audio', nonWordsFilledTrials[t].stim2.trim()+'.wav'))
@@ -1172,19 +1180,19 @@ function showNextWordsUnfilledTrial() {
     t = maxNumberOfNonWordsUnfilledTrials+1
     return false
   }
-  var img = document.createElement("img")
-  img.src = path.join(exp.mediapath, 'sound512px' + '.png')
-  img.style.height = "40%"
-  content.appendChild(img)
+  // var img = document.createElement("img")
+  // img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+  // img.style.height = "40%"
+  // content.appendChild(img)
   t1 = performance.now()
   playAudio(path.join(wordsUnfilledMediaPath, 'audio', wordsUnfilledTrials[t].stim1.trim()+'.wav'))
   //showNumberSequence()
   wordsUnfilledStim2Timeout = setTimeout(function() {
     clearScreen()
-    var img = document.createElement("img")
-    img.src = path.join(exp.mediapath, 'sound512px' + '.png')
-    img.style.height = "40%"
-    content.appendChild(img)
+    // var img = document.createElement("img")
+    // img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+    // img.style.height = "40%"
+    // content.appendChild(img)
     t2 = performance.now()
     console.log("time since first file played: ", t2-t1)
     stimOnset = playAudio(path.join(wordsUnfilledMediaPath, 'audio', wordsUnfilledTrials[t].stim2.trim()+'.wav'))
@@ -1204,19 +1212,19 @@ function showNextNonWordsUnfilledTrial() {
     t = maxNumberOfNonWordsUnfilledTrials+1
     return false
   }
-  var img = document.createElement("img")
-  img.src = path.join(exp.mediapath, 'sound512px' + '.png')
-  img.style.height = "40%"
-  content.appendChild(img)
+  // var img = document.createElement("img")
+  // img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+  // img.style.height = "40%"
+  // content.appendChild(img)
   t1 = performance.now()
   playAudio(path.join(nonWordsUnfilledMediaPath, 'audio', nonWordsUnfilledTrials[t].stim1.trim()+'.wav'))
   //showNumberSequence()
   nonWordsUnfilledStim2Timeout = setTimeout(function() {
     clearScreen()
-    var img = document.createElement("img")
-    img.src = path.join(exp.mediapath, 'sound512px' + '.png')
-    img.style.height = "40%"
-    content.appendChild(img)
+    // var img = document.createElement("img")
+    // img.src = path.join(exp.mediapath, 'sound512px' + '.png')
+    // img.style.height = "40%"
+    // content.appendChild(img)
     t2 = performance.now()
     console.log("time since first file played: ", t2-t1)
     stimOnset = playAudio(path.join(nonWordsUnfilledMediaPath, 'audio', nonWordsUnfilledTrials[t].stim2.trim()+'.wav'))
