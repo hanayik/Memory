@@ -17,7 +17,7 @@ const autoUpdater = electron.autoUpdater
 var platform = os.platform() + '_' + os.arch();
 var version = app.getVersion();
 var updateResponse
-app.setName("TALSA")
+app.setName("Memory")
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
