@@ -8,8 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron app.js",
     "build-mac": "electron-packager . --out=dist --icon ./icon.icns --platform=darwin --overwrite --tmpdir=false",
-    "osx-sign": "codesign --deep --force --verbose --sign 'PLJK232T8G' ./dist/Memory-darwin-x64/Memory.app",
-    "startAppWithLogging": "./dist/Memory-darwin-x64/Memory.app/Contents/MacOS/Memory"
+    "osx-sign": "codesign --deep --force --verbose --sign 'PLJK232T8G' ./dist/TALSA-darwin-x64/TALSA.app",
+    "startAppWithLogging": "./dist/TALSA-darwin-x64/TALSA.app/Contents/MacOS/TALSA"
   },
   "repository": {
     "type": "git",
