@@ -95,7 +95,7 @@ var rt
 //var trialNumber = 1
 var t = -1
 var tReal = t-1
-lowLag.init(); // init audio functions
+lowLag.init({'force':'audioTag'}); // init audio functions
 var wordsFilledInstructions = ["<h1>In this task you will hear two words. <br> " +
                     "You will hear one word, then you will see a series of 4 numbers on the screen. <br>" +
                     "When you see each number say it out loud. <br>" +
