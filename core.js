@@ -432,7 +432,7 @@ function clearScreen() {
 
 // show text instructions on screen
 function showWordsFilledInstructions(txt) {
-  dir = path.join(savePath, 'PolarData', 'Talsa-' + assessment, getSubjID(), getSessID())
+  dir = path.join(savePath, 'Talsa-' + assessment, getSubjID(), getSessID())
   if (!fs.existsSync(dir)) {
     mkdirp.sync(dir)
   }
@@ -461,7 +461,7 @@ function showWordsFilledInstructions(txt) {
 }
 
 function showNonWordsFilledInstructions(txt) {
-  dir = path.join(savePath, 'PolarData', 'Talsa-' + assessment, getSubjID(), getSessID())
+  dir = path.join(savePath, 'Talsa-' + assessment, getSubjID(), getSessID())
   if (!fs.existsSync(dir)) {
     mkdirp.sync(dir)
   }
@@ -490,7 +490,7 @@ function showNonWordsFilledInstructions(txt) {
 }
 
 function showWordsUnfilledInstructions(txt) {
-  dir = path.join(savePath, 'PolarData', 'Talsa-' + assessment, getSubjID(), getSessID())
+  dir = path.join(savePath, 'Talsa-' + assessment, getSubjID(), getSessID())
   if (!fs.existsSync(dir)) {
     mkdirp.sync(dir)
   }
@@ -520,7 +520,7 @@ function showWordsUnfilledInstructions(txt) {
 
 
 function showNonWordsUnfilledInstructions(txt) {
-  dir = path.join(savePath, 'PolarData', 'Talsa-' + assessment, getSubjID(), getSessID())
+  dir = path.join(savePath, 'Talsa-' + assessment, getSubjID(), getSessID())
   if (!fs.existsSync(dir)) {
     mkdirp.sync(dir)
   }
@@ -550,7 +550,7 @@ function showNonWordsUnfilledInstructions(txt) {
 
 
 function showTripletsA1Instructions(txt) {
-  dir = path.join(savePath, 'PolarData', 'Talsa-' + assessment, getSubjID(), getSessID())
+  dir = path.join(savePath, 'Talsa-' + assessment, getSubjID(), getSessID())
   if (!fs.existsSync(dir)) {
     mkdirp.sync(dir)
   }
@@ -580,7 +580,7 @@ function showTripletsA1Instructions(txt) {
 
 
 function showTripletsA2Instructions(txt) {
-  dir = path.join(savePath, 'PolarData', 'Talsa-' + assessment, getSubjID(), getSessID())
+  dir = path.join(savePath, 'Talsa-' + assessment, getSubjID(), getSessID())
   if (!fs.existsSync(dir)) {
     mkdirp.sync(dir)
   }
