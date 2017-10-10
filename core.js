@@ -129,6 +129,7 @@ var randomArray = [1,2,3,4,5,6,7,8,9]
 var userDataPath = path.join(app.getPath('userData'),'Data')
 makeSureUserDataFolderIsThere()
 var savePath
+var ableToRespond = false
 
 
 
@@ -905,6 +906,9 @@ function appendTripletsA2TrialDataToFile(fileToAppend, dataArray) {
 // update keys object when a keydown event is detected
 function updateKeys() {
   // gets called from: document.addEventListener('keydown', updateKeys);
+  if (!ableToRespond) {
+    return
+  }
   iti = 1500 // milliseconds
   keys.key = event.key
   keys.time = performance.now() // gives ms
@@ -944,6 +948,7 @@ function updateKeys() {
       appendNonWordsUnfilledTrialDataToFile(nonWordsUnfilledFileToSave, [subjID, sessID, assessment, nonWordsUnfilledTrials[t].stim1.trim(), nonWordsUnfilledTrials[t].stim2.trim(), nonWordsUnfilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
       setTimeout(showNextNonWordsUnfilledTrial, iti)
     }
+    ableToRespond = false
   } else if (keys.key === 'ArrowLeft') {
 
   }
@@ -1121,6 +1126,7 @@ function showNumberSequence() {
 
 
 function showNextWordsFilledTrial() {
+  ableToRespond = false
   clearTimeout(wordsFilledTimeoutID)
   closeNav()
   clearScreen()
@@ -1146,6 +1152,7 @@ function showNextWordsFilledTrial() {
     t2 = performance.now()
     console.log("time since first file played: ", t2-t1)
     stimOnset = playAudio(path.join(wordsFilledMediaPath, 'audio', wordsFilledTrials[t].stim2.trim()+'.wav'))
+    ableToRespond = true
   }, 6000)
   wordsFilledTimeoutID = setTimeout(showNextWordsFilledTrial, wordsFilledTimeoutTime)
   return stimOnset
@@ -1153,6 +1160,7 @@ function showNextWordsFilledTrial() {
 
 
 function showNextNonWordsFilledTrial() {
+  ableToRespond = false
   clearTimeout(nonWordsFilledTimeoutID)
   closeNav()
   clearScreen()
@@ -1178,6 +1186,7 @@ function showNextNonWordsFilledTrial() {
     t2 = performance.now()
     console.log("time since first file played: ", t2-t1)
     stimOnset = playAudio(path.join(nonWordsFilledMediaPath, 'audio', nonWordsFilledTrials[t].stim2.trim()+'.wav'))
+    ableToRespond = true
   }, 6000)
   nonWordsFilledTimeoutID = setTimeout(showNextNonWordsFilledTrial, nonWordsFilledTimeoutTime)
   return stimOnset
@@ -1185,6 +1194,7 @@ function showNextNonWordsFilledTrial() {
 
 
 function showNextWordsUnfilledTrial() {
+  ableToRespond = false
   clearTimeout(wordsUnfilledTimeoutID)
   closeNav()
   clearScreen()
@@ -1210,6 +1220,7 @@ function showNextWordsUnfilledTrial() {
     t2 = performance.now()
     console.log("time since first file played: ", t2-t1)
     stimOnset = playAudio(path.join(wordsUnfilledMediaPath, 'audio', wordsUnfilledTrials[t].stim2.trim()+'.wav'))
+    ableToRespond = true
   }, 6000)
   wordsUnfilledTimeoutID = setTimeout(showNextWordsUnfilledTrial, wordsFilledTimeoutTime)
   return stimOnset
@@ -1217,6 +1228,7 @@ function showNextWordsUnfilledTrial() {
 
 
 function showNextNonWordsUnfilledTrial() {
+  ableToRespond = false
   clearTimeout(nonWordsUnfilledTimeoutID)
   closeNav()
   clearScreen()
@@ -1242,6 +1254,7 @@ function showNextNonWordsUnfilledTrial() {
     t2 = performance.now()
     console.log("time since first file played: ", t2-t1)
     stimOnset = playAudio(path.join(nonWordsUnfilledMediaPath, 'audio', nonWordsUnfilledTrials[t].stim2.trim()+'.wav'))
+    ableToRespond = true
   }, 6000)
   nonWordsUnfilledTimeoutID = setTimeout(showNextNonWordsUnfilledTrial, nonWordsUnfilledTimeoutTime)
   return stimOnset
