@@ -32,10 +32,10 @@ var wordsUnfilledTimeoutID
 var nonWordsUnfilledTimeoutID
 var tripletsA1TimeoutID
 var tripletsA2TimeoutID
-var wordsFilledTimeoutTime = 1000*30 // 30 seconds
-var wordsUnfilledTimeoutTime = 1000*30 // 30 seconds
-var nonWordsFilledTimeoutTime = 1000*30 // 30 seconds
-var nonWordsUnfilledTimeoutTime = 1000*30 // 30 seconds
+var wordsFilledTimeoutTime = 1000*300 // 5 minutes
+var wordsUnfilledTimeoutTime = 1000*300 // 5 minutes
+var nonWordsFilledTimeoutTime = 1000*300 // 5 minutes
+var nonWordsUnfilledTimeoutTime = 1000*300 // 5 minutes
 var tripletsA1TimeoutTime = 1000*30
 var tripletsA2TimeoutTime = 1000*30
 var imgTimeoutID
